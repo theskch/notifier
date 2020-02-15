@@ -48,8 +48,10 @@ type client struct {
 
 // SendMessage http client implementation
 func (c *client) SendMessage(message []byte, call notifier.Callback) {
-	c.sem <- 1
-	go c.sendPOSTRequest(message, call)
+	go func() {
+		c.sem <- 1
+		c.sendPOSTRequest(message, call)
+	}()
 }
 
 func (c *client) sendPOSTRequest(message []byte, call notifier.Callback) {
