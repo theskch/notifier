@@ -1,2 +1,2 @@
-# notifier
-A simple http notifier that takes the message and sends it as a HTTP POST request to a desired address
+# Notifier
+A simple http notifier used for sending HTTP POST reqeusts. Each request is sent asynchronous, and the response is recived trough callback function.
