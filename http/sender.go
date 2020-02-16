@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// MessageResponse recieved from the
+// MessageResponse recived from the target url containing response status, code and content
 type MessageResponse struct {
 	Status  string
 	Code    int
@@ -18,7 +18,7 @@ type Sender interface {
 	SendPOST(message []byte, url string) (MessageResponse, error)
 }
 
-// DefaultSender is the sender that uses build in http client for sending requests
+// DefaultSender is the wrapper around go http libary used for sending http requests; It implements the `Sender` interface
 type DefaultSender struct {
 	httpClient http.Client
 }

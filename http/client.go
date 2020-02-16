@@ -1,3 +1,4 @@
+// Package http provides implementation of the notifier client that uses HTTP to sent messages
 package http
 
 import (
@@ -16,7 +17,7 @@ type ClientConfig struct {
 }
 
 // NewHTTPClient returnes a http imepelemntation of notifier client.
-// url is the address on which the message will be sent
+// url is the address to which the message is sent.
 // limit is the number of simultaneous messages that can be sent. Setting the limit to 1 will send sync messages. Limit must be greater than 0.
 func NewHTTPClient(config ClientConfig) (notifier.Client, error) {
 	if config.Limit <= 0 {
@@ -42,14 +43,14 @@ func NewHTTPClient(config ClientConfig) (notifier.Client, error) {
 // client an http impelemntation of NotifierClient
 type client struct {
 	url    string
-	sem    chan int
+	sem    chan int // channel used for semaphore implementation
 	sender Sender
 }
 
 // SendMessage http client implementation
 func (c *client) SendMessage(message []byte, call notifier.Callback) {
 	go func() {
-		c.sem <- 1
+		c.sem <- 1 // blocks the message brodcast if the limit has been reached
 		c.sendPOSTRequest(message, call)
 	}()
 }
@@ -69,6 +70,7 @@ func (c *client) sendPOSTRequest(message []byte, call notifier.Callback) {
 	}
 
 	if err == nil {
+		// If response code is one of these 3, set the content for the call backe; else set the error and ingore the content
 		if response.Code == StatusOK || response.Code == StatusCreated || response.Code == StatusAccepted {
 			retVal = response.Content
 		} else {
